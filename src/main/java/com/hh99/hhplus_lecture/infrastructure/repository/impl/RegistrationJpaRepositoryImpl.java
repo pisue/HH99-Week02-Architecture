@@ -20,7 +20,7 @@ public class RegistrationJpaRepositoryImpl implements RegistrationRepository {
     }
 
     @Override
-    public boolean checkRegistration(String userId, Long lectureId) {
-        return registrationJpaRepository.findByUserIdAndLectureId(userId, lectureId).isPresent();
+    public boolean checkRegistration(RegistrationCommand registrationCommand) {
+        return registrationJpaRepository.findByUserIdAndLectureId(registrationCommand.getUserId(), registrationCommand.getLectureId()).isPresent();
     }
 }

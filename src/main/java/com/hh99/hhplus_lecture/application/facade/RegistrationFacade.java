@@ -1,7 +1,10 @@
 package com.hh99.hhplus_lecture.application.facade;
 
+import com.hh99.hhplus_lecture.domain.model.dto.LectureCapacityInfo;
 import com.hh99.hhplus_lecture.domain.model.dto.LectureFullInfo;
+import com.hh99.hhplus_lecture.domain.model.dto.LectureInfo;
 import com.hh99.hhplus_lecture.domain.model.dto.RegistrationCommand;
+import com.hh99.hhplus_lecture.domain.service.LectureService;
 import com.hh99.hhplus_lecture.domain.service.RegistrationService;
 import com.hh99.hhplus_lecture.interfaces.api.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,22 +15,31 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class RegistrationFacade {
     private final RegistrationService registrationService;
-    private final LectureFacade lectureFacade;
+    private final LectureService lectureService;
 
     @Transactional
-    public void register(RegisterRequest registerRequest) {
-        if (registrationService.checkRegistration(registerRequest)) {
-            throw new RuntimeException("이미 신청 완료 된 특강입니다.");
-        }
+    public void register(RegistrationCommand registrationCommand) {
+        // 유저 수강 신청 여부
+        if (registrationService.checkRegistration(registrationCommand)) throw new RuntimeException("이미 신청 완료 된 특강입니다.");
 
-        LectureFullInfo lectureFullInfo = lectureFacade.getLectureFullInfo(registerRequest.getLectureId());
+        //강의 정보 조회
+        LectureInfo lectureInfo = lectureService.read(registrationCommand.getLectureId());
+        LectureCapacityInfo capacityInfo = lectureService.readCapacity(registrationCommand.getLectureId());
+        LectureFullInfo lectureFullInfo = LectureFullInfo.builder()
+                .lectureId(lectureInfo.getId())
+                .lectureName(lectureInfo.getLectureName())
+                .lectureDateTime(lectureInfo.getLectureDateTime())
+                .instructor(lectureInfo.getInstructor())
+                .instructorId(lectureInfo.getInstructorId())
+                .capacity(capacityInfo.getCapacity())
+                .currentEnrollment(capacityInfo.getCurrentEnrollment())
+                .build();
 
-        if (lectureFullInfo.getCurrentEnrollment() >= lectureFullInfo.getCapacity()) {
-            throw new RuntimeException("신청 불가: 강의 정원이 가득 찼습니다.");
-        }
+        //수강생 초과 여부
+        if (lectureFullInfo.getCurrentEnrollment() >= lectureFullInfo.getCapacity()) throw new RuntimeException("신청 불가: 강의 정원이 가득 찼습니다.");
 
-        registrationService.register(new RegistrationCommand(registerRequest.getUserId(), lectureFullInfo.getLectureId()));
-        lectureFacade.incrementEnrollment(registerRequest.getLectureId());
+        registrationService.register(registrationCommand);
+        lectureService.incrementEnrollment(registrationCommand.getLectureId());
     }
 
 }

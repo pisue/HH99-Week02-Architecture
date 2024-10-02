@@ -5,5 +5,5 @@ import com.hh99.hhplus_lecture.domain.model.dto.RegistrationCommand;
 public interface RegistrationRepository {
     void register(RegistrationCommand registrationCommand);
 
-    boolean checkRegistration(String userId, Long lectureId);
+    boolean checkRegistration(RegistrationCommand registrationCommand);
 }

@@ -2,7 +2,6 @@ package com.hh99.hhplus_lecture.domain.service;
 
 import com.hh99.hhplus_lecture.domain.model.dto.RegistrationCommand;
 import com.hh99.hhplus_lecture.domain.repository.RegistrationRepository;
-import com.hh99.hhplus_lecture.interfaces.api.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ public class RegistrationService {
         registrationRepository.register(registrationCommand);
     }
 
-    public boolean checkRegistration(RegisterRequest registerRequest) {
-        return registrationRepository.checkRegistration(registerRequest.getUserId(), registerRequest.getLectureId());
+    public boolean checkRegistration(RegistrationCommand registrationCommand) {
+        return registrationRepository.checkRegistration(registrationCommand);
     }
 }

@@ -1,6 +1,7 @@
 package com.hh99.hhplus_lecture.interfaces.api.controller;
 
 import com.hh99.hhplus_lecture.application.facade.RegistrationFacade;
+import com.hh99.hhplus_lecture.domain.model.dto.RegistrationCommand;
 import com.hh99.hhplus_lecture.interfaces.api.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,9 @@ public class RegistrationController {
     /**
      * TODO - 특강신청 기능
      */
-    @PostMapping("")
+    @PostMapping()
     public HttpStatus register(@RequestBody RegisterRequest registerRequest) {
-        registrationFacade.register(registerRequest);
+        registrationFacade.register(new RegistrationCommand(registerRequest.getUserId(), registerRequest.getLectureId()));
     return HttpStatus.CREATED;
     }
 }
