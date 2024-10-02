@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class LectureController {
     private final LectureFacade lectureFacade;
 
+    /**
+     * TODO - 전체 강의 조회
+     */
     @GetMapping("")
     @ResponseBody
     public LectureInfosResponse lectures() {

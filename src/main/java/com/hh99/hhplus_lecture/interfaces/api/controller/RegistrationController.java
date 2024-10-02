@@ -16,7 +16,7 @@ public class RegistrationController {
     private final RegistrationFacade registrationFacade;
 
     /**
-     * TODO - 강의를 신청하는 기능
+     * TODO - 특강신청 기능
      */
     @PostMapping("")
     public HttpStatus register(@RequestBody RegisterRequest registerRequest) {

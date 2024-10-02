@@ -18,4 +18,9 @@ public class RegistrationJpaRepositoryImpl implements RegistrationRepository {
         Registration registration = new Registration(registrationCommand);
         registrationJpaRepository.save(registration);
     }
+
+    @Override
+    public boolean checkRegistration(String userId, Long lectureId) {
+        return registrationJpaRepository.findByUserIdAndLectureId(userId, lectureId).isPresent();
+    }
 }

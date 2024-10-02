@@ -22,5 +22,8 @@ public class Lecture {
     private String instructor;
 
     @Column(nullable = false)
+    private Long instructorId;
+
+    @Column(nullable = false)
     private LocalDateTime lectureDateTime;
 }
