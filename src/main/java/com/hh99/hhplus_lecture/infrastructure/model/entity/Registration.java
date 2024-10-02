@@ -1,5 +1,6 @@
-package com.hh99.hhplus_lecture.domain.model.entity;
+package com.hh99.hhplus_lecture.infrastructure.model.entity;
 
+import com.hh99.hhplus_lecture.domain.model.dto.RegistrationCommand;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,13 @@ public class Registration {
 
     private String userId;
 
-    @ManyToOne
-    @JoinColumn(name = "lecture_id")
-    private Lecture lecture;
+    private Long lectureId;
 
     private LocalDateTime registrationDate;
+
+    public Registration(RegistrationCommand registrationCommand) {
+        this.userId = registrationCommand.getUserId();
+        this.lectureId = registrationCommand.getLectureId();
+        this.registrationDate = LocalDateTime.now();
+    }
 }
