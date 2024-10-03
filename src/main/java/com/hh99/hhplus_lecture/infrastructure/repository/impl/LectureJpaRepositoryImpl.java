@@ -1,6 +1,7 @@
 package com.hh99.hhplus_lecture.infrastructure.repository.impl;
 
 import com.hh99.hhplus_lecture.domain.model.dto.LectureCapacityInfo;
+import com.hh99.hhplus_lecture.domain.model.dto.LectureFullInfo;
 import com.hh99.hhplus_lecture.domain.model.dto.LectureInfo;
 import com.hh99.hhplus_lecture.domain.repository.LectureRepository;
 import com.hh99.hhplus_lecture.infrastructure.model.entity.Lecture;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +52,26 @@ public class LectureJpaRepositoryImpl implements LectureRepository {
                 .capacity(capacity.getCapacity())
                 .currentEnrollment(capacity.getCurrentEnrollment())
                 .build();
+    }
+
+    @Override
+    public List<LectureFullInfo> findLecturesAfterDate(LocalDate date) {
+        LocalDateTime dateTime = date.atStartOfDay();
+        List<Lecture> lectures = lectureJpaRepository.findByLectureDateTimeAfter(dateTime);
+        return lectures.stream()
+                .map(lecture -> {
+                    LectureCapacity capacity = lectureCapacityJpaRepository.findByLectureId(lecture.getId());
+                    return LectureFullInfo.builder()
+                            .lectureId(lecture.getId())
+                            .lectureName(lecture.getLectureName())
+                            .instructor(lecture.getInstructor())
+                            .instructorId(lecture.getInstructorId())
+                            .lectureDateTime(lecture.getLectureDateTime())
+                            .capacity(capacity.getCapacity())
+                            .currentEnrollment(capacity.getCurrentEnrollment())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
