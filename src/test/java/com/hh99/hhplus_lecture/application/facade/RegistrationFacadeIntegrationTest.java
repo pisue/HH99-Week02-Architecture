@@ -130,4 +130,32 @@ class RegistrationFacadeIntegrationTest {
         System.out.println("실패한 수강신청 수: " + failCount.get());
     }
 
+    @Test
+    void 동일사용자_중복신청_테스트() {
+        String userId = "testUser2";
+        int numberOfAttempts = 5;
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger failCount = new AtomicInteger(0);
+
+        for (int i = 0; i < numberOfAttempts; i++) {
+            try {
+                RegistrationCommand command = new RegistrationCommand(userId, lecture.getId());
+                registrationFacade.register(command);
+                successCount.incrementAndGet();
+            } catch (RuntimeException e) {
+                if (e.getMessage().equals("이미 신청 완료 된 특강입니다.")) {
+                    failCount.incrementAndGet();
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        assertEquals(1, successCount.get(), "성공한 신청 횟수는 1이어야 합니다.");
+        assertEquals(4, failCount.get(), "실패한 신청 횟수는 4여야 합니다.");
+
+        LectureCapacity updatedCapacity = lectureCapacityJpaRepository.findByLectureId(lecture.getId());
+        assertEquals(1, updatedCapacity.getCurrentEnrollment(), "현재 등록 인원은 1이어야 합니다.");
+    }
+
 }
