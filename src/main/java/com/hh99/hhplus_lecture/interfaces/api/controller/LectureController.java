@@ -23,4 +23,8 @@ public class LectureController {
         return lectureFacade.lectureInfos();
     }
 
+    /*
+    * TODO - 날짜별로 현재 신청 가능한 특강 목록을 조회하는 API
+    */
+
 }
