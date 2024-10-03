@@ -2,12 +2,12 @@ package com.hh99.hhplus_lecture.application.facade;
 
 import com.hh99.hhplus_lecture.domain.model.dto.LectureCapacityInfo;
 import com.hh99.hhplus_lecture.domain.model.dto.LectureFullInfo;
-import com.hh99.hhplus_lecture.domain.model.dto.LectureInfo;
 import com.hh99.hhplus_lecture.domain.service.LectureService;
 import com.hh99.hhplus_lecture.interfaces.api.response.LectureInfosResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,22 +43,11 @@ public class LectureFacade {
                 .build();
     }
 
-    public LectureFullInfo getLectureFullInfo(Long id) {
-        LectureInfo lectureInfo = lectureService.read(id);
-        LectureCapacityInfo capacityInfo = lectureService.readCapacity(id);
-
-        return LectureFullInfo.builder()
-                .lectureId(lectureInfo.getId())
-                .lectureName(lectureInfo.getLectureName())
-                .lectureDateTime(lectureInfo.getLectureDateTime())
-                .instructor(lectureInfo.getInstructor())
-                .instructorId(lectureInfo.getInstructorId())
-                .capacity(capacityInfo.getCapacity())
-                .currentEnrollment(capacityInfo.getCurrentEnrollment())
+    public LectureInfosResponse getLecturesAfterDate(LocalDate date) {
+        List<LectureFullInfo> getLecturesAfterDate = lectureService.findLecturesAfterDate(date);
+        return LectureInfosResponse.builder()
+                .lectureFullInfos(getLecturesAfterDate)
                 .build();
     }
 
-    public void incrementEnrollment(Long lectureId) {
-        lectureService.incrementEnrollment(lectureId);
-    }
 }

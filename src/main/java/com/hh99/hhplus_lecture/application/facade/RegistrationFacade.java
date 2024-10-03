@@ -27,7 +27,7 @@ public class RegistrationFacade {
     public void register(RegistrationCommand registrationCommand) {
         lock.lock();
         try {
-        // 유저 수강 신청 여부
+        // 유저 수강 신청 여부 - 이미 신청한 수강생은 신청할 수 없다.
         if (registrationService.checkRegistration(registrationCommand)) throw new RuntimeException("이미 신청 완료 된 특강입니다.");
 
         //강의 정보 조회

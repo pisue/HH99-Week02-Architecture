@@ -1,6 +1,7 @@
 package com.hh99.hhplus_lecture.domain.service;
 
 import com.hh99.hhplus_lecture.domain.model.dto.LectureCapacityInfo;
+import com.hh99.hhplus_lecture.domain.model.dto.LectureFullInfo;
 import com.hh99.hhplus_lecture.domain.model.dto.LectureInfo;
 import com.hh99.hhplus_lecture.domain.repository.LectureRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +27,9 @@ class LectureServiceTest {
     private LectureService lectureService;
 
     private LectureInfo lectureInfo;
+    private LectureInfo lectureInfo2;
     private LectureCapacityInfo lectureCapacityInfo;
+    private LectureCapacityInfo lectureCapacityInfo2;
     private List<LectureInfo> lectureInfoList;
     private List<LectureCapacityInfo> lectureCapacityInfoList;
 
@@ -42,7 +46,7 @@ class LectureServiceTest {
                 .instructorId(1L)
                 .build();
 
-        LectureInfo lectureInfo2 = LectureInfo.builder()
+        lectureInfo2 = LectureInfo.builder()
                 .id(2L)
                 .lectureDateTime(LocalDateTime.now().plusDays(1))
                 .lectureName("스프링 부트")
@@ -59,7 +63,7 @@ class LectureServiceTest {
                 .currentEnrollment(15)
                 .build();
 
-        LectureCapacityInfo lectureCapacityInfo2 = LectureCapacityInfo.builder()
+        lectureCapacityInfo2 = LectureCapacityInfo.builder()
                 .lectureId(2L)
                 .capacity(25)
                 .currentEnrollment(20)
@@ -159,6 +163,36 @@ class LectureServiceTest {
         assertEquals(lectureCapacityInfoList, result);
         assertEquals(2, lectureCapacityInfoList.size());
         verify(lectureRepository, times(1)).capacities();
+    }
+
+    @Test
+    void 날짜별_특강정보_조회() {
+        //given
+        LocalDate testDate = LocalDate.of(2024, 10, 1);
+        LectureFullInfo LectureFullInfo1 = LectureFullInfo.builder()
+                .lectureId(lectureInfo.getId())
+                .lectureName(lectureInfo.getLectureName())
+                .lectureDateTime(lectureInfo.getLectureDateTime())
+                .instructor(lectureInfo.getInstructor())
+                .instructorId(lectureInfo.getInstructorId())
+                .capacity(lectureCapacityInfo.getCapacity())
+                .currentEnrollment(lectureCapacityInfo.getCurrentEnrollment())
+                .build();
+        LectureFullInfo LectureFullInfo2 = LectureFullInfo.builder()
+                .lectureId(lectureInfo.getId())
+                .lectureName(lectureInfo.getLectureName())
+                .lectureDateTime(lectureInfo.getLectureDateTime())
+                .instructor(lectureInfo.getInstructor())
+                .instructorId(lectureInfo.getInstructorId())
+                .capacity(lectureCapacityInfo.getCapacity())
+                .currentEnrollment(lectureCapacityInfo.getCurrentEnrollment())
+                .build();
+        when(lectureRepository.findLecturesAfterDate(testDate)).thenReturn(List.of(LectureFullInfo1,LectureFullInfo2));
+
+        //when
+        List<LectureFullInfo> result = lectureService.findLecturesAfterDate(testDate);
+        assertEquals(List.of(LectureFullInfo1,LectureFullInfo2), result);
+        verify(lectureRepository, times(1)).findLecturesAfterDate(testDate);
     }
 
 }
