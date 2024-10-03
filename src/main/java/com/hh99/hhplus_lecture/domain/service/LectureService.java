@@ -6,6 +6,7 @@ import com.hh99.hhplus_lecture.domain.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class LectureService {
         return lectureRepository.readCapacity(lectureId);
     }
 
+    @Transactional
     public void incrementEnrollment(Long lectureId) {
         lectureRepository.incrementEnrollment(lectureId);
     }
