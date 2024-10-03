@@ -10,7 +10,9 @@ import com.hh99.hhplus_lecture.infrastructure.repository.LectureJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class LectureJpaRepositoryImpl implements LectureRepository {
     private final LectureJpaRepository lectureJpaRepository;
     private final LectureCapacityJpaRepository lectureCapacityJpaRepository;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
     public LectureInfo read(Long id) {
@@ -49,13 +52,14 @@ public class LectureJpaRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void incrementEnrollment(Long lectureId) {
-        LectureCapacity capacity = lectureCapacityJpaRepository.findByLectureId(lectureId);
+        LectureCapacity capacity = lectureCapacityJpaRepository.findByLectureIdWithLock(lectureId);
         if(capacity.getCurrentEnrollment() >= capacity.getCapacity()) {
             throw new RuntimeException("강의 정원이 초과되었습니다.");
         }
-        capacity.setCurrentEnrollment(capacity.getCurrentEnrollment() + 1);
+        System.out.println("capacity.getCurrentEnrollment()::::::"+capacity.getCurrentEnrollment());
+        capacity.setCurrentEnrollment(capacity.getCurrentEnrollment()+1);
         lectureCapacityJpaRepository.save(capacity);
     }
 
